@@ -15,19 +15,35 @@ function alert(head, sub) {
     }, 3000);
 
 }
+var proj_name = null;
+var bpm = null;
 
 onEvent("start", "click", function() {
+    proj_name = getText("name");
+    bpm = getText("bpm");
     // Both name and bpm fields must be filled
-    if (!getText("name")) {
+    if (!proj_name) {
         alert("Warning!", "Must have project name");
         return;
     }
 
-    if (!getText("bpm")) {
+    if (!bpm) {
         alert("Warning!", "Must have bpm set (default: 120)");
         return;
     }
 
+    if (!isFinite(bpm)) {
+        alert("Warning!", "bpm must be a positive number");
+        return;
+    }
+
+    if (getNumber("bpm") < 10 || getNumber("bpm") > 400) {
+        alert("Warning!", "bpm must be greater than 10, and less than 400");
+        return;
+    }
+
+    setText("bpm_box", bpm + " bpm");
+    setNumber("bpm_slider", getNumber("bpm"));
     setScreen("timeline");
 });
 
@@ -67,6 +83,8 @@ onEvent("filters_bbb", "click", function() {
     setScreen("filters");
 });
 
-
+onEvent("bpm_slider", "input", function() {
+    setText("bpm_box", getNumber("bpm_slider") + " bpm");
+});
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

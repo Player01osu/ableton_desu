@@ -1,4 +1,4 @@
-var alert_n = 0;
+var alert_n = 0 | 0;
 function alert_border(n) {
     image("alert_border" + "_" + n, "Untitled.png");
     setProperty("alert_border" + "_" + n, "width", 130);
@@ -7,7 +7,7 @@ function alert_border(n) {
     setProperty("alert_border" + "_" + n, "y", 10);
     setProperty("alert_border" + "_" + n, "fit", "fill");
     setProperty("alert_border" + "_" + n, "border-width", 6);
-    setProperty("alert_border" + "_" + n, "border-color", rgb(159, 159, 159));
+    setProperty("alert_border" + "_" + n, "border-color", rgb(159, 159, 159, 0.9));
 }
 
 function alert_head(text, n) {
@@ -35,7 +35,7 @@ function alert(head, sub) {
         deleteElement("alert_sub" + "_" + alert_n_scoped);
         deleteElement("alert_border" + "_" + alert_n_scoped);
         --alert_n;
-    }, 3000);
+    }, 3000 | 0);
     ++alert_n;
 }
 

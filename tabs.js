@@ -48,9 +48,9 @@ function tabs_select(tabs, tab_name) {
 }
 
 function tabs_clear(tabs) {
-	tabs.elements_id.forEach(function(id) {
-		deleteElement(id);
-	});
+    tabs.elements_id.forEach(function(id) {
+        deleteElement(id);
+    });
     tabs.elements_id = [];
 }
 

@@ -16,7 +16,7 @@
  *
  * -Jessica, Code.org 3 Engineer
  * Feb 2020
-*/
+ */
 
 var proj_name = null;
 var bpm = null | 0;
@@ -24,20 +24,6 @@ var MAX_INPUT_LENGTH = 24 | 0;
 
 setText("name","my_project");
 setText("bpm", "120");
-
-function alert(head, sub) {
-    showElement("alert_head");
-    showElement("alert_sub");
-    showElement("alert_border");
-    setText("alert_head", head);
-    setText("alert_sub", sub);
-
-    setTimeout(function() {
-        hideElement("alert_head");
-        hideElement("alert_sub");
-        setProperty("alert_border", "hidden", true);
-    }, 3000);
-}
 
 function limit_input(id) {
     onEvent(id, "input", function() {
@@ -115,5 +101,95 @@ screen_to_onclick("filters_bb", "filters");
 screen_to_onclick("timeline_bbb", "timeline");
 screen_to_onclick("effects_bbb", "effects");
 screen_to_onclick("filters_bbb", "filters");
+
+// vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+var metronome_toggle = false;
+
+onEvent("metronome_button", "click", function() {
+    if (!metronome_toggle) {
+        setProperty("metronome_button", "border-width", 5);
+    } else {
+        setProperty("metronome_button", "border-width", 0);
+    }
+    metronome_toggle = !metronome_toggle;
+});
+
+// vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+
+var playing = false;
+
+function player() {
+    var t = (60 * 1000) / bpm;
+
+    timedLoop(t, function() {
+        if (metronome_toggle) {
+            playSound("soft-hitnormal.mp3", false);
+        }
+    });
+}
+
+var metronome_warn_timer = true;
+
+onEvent("bpm_slider", "input", function() {
+    if (metronome_toggle && playing && metronome_warn_timer) {
+        alert("Warning!", "Metronome will not be affected until re-played");
+        metronome_warn_timer = false;
+        setTimeout(function() {metronome_warn_timer = true}, 3000);
+    }
+});
+
+onEvent("play_button", "click", function() {
+    if (!playing) {
+        setImageURL("play_button", "icon://fa-pause");
+        player();
+    } else {
+        setImageURL("play_button", "icon://fa-play");
+        stopTimedLoop();
+    }
+    playing = !playing;
+});
+
+// vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+var alert_n = 0;
+function alert_border(n) {
+    image("alert_border" + "_" + n, "Untitled.png");
+    setProperty("alert_border" + "_" + n, "width", 130);
+    setProperty("alert_border" + "_" + n, "height", 83);
+    setProperty("alert_border" + "_" + n, "x", 180);
+    setProperty("alert_border" + "_" + n, "y", 10);
+    setProperty("alert_border" + "_" + n, "fit", "fill");
+    setProperty("alert_border" + "_" + n, "border-width", 6);
+    setProperty("alert_border" + "_" + n, "border-color", rgb(159, 159, 159));
+}
+
+function alert_head(text, n) {
+    textLabel("alert_head" + "_" + n, text);
+    setPosition("alert_head" + "_" + n, 190, 20, 100, 25);
+    setProperty("alert_head" + "_" + n, "text-color", rgb(181, 188, 193));
+    setProperty("alert_head" + "_" + n, "font-size", 14);
+}
+
+function alert_sub(text, n) {
+    textLabel("alert_sub" + "_" + n, text);
+    setPosition("alert_sub" + "_" + n, 190, 40, 125, 50);
+    setProperty("alert_sub" + "_" + n, "text-color", rgb(181, 188, 193));
+    setProperty("alert_sub" + "_" + n, "font-size", 11);
+}
+
+function alert(head, sub) {
+    alert_border(alert_n);
+    alert_head(head, alert_n);
+    alert_sub(sub, alert_n);
+
+    var alert_n_scoped = alert_n;
+    setTimeout(function() {
+        console.log(alert_n_scoped);
+        deleteElement("alert_head" + "_" + alert_n_scoped);
+        deleteElement("alert_sub" + "_" + alert_n_scoped);
+        deleteElement("alert_border" + "_" + alert_n_scoped);
+        --alert_n;
+    }, 3000);
+    ++alert_n;
+}
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

@@ -16,7 +16,7 @@
  *
  * -Jessica, Code.org 3 Engineer
  * Feb 2020
-*/
+ */
 
 var proj_name = null;
 var bpm = null | 0;
@@ -24,20 +24,6 @@ var MAX_INPUT_LENGTH = 24 | 0;
 
 setText("name","my_project");
 setText("bpm", "120");
-
-function alert(head, sub) {
-    showElement("alert_head");
-    showElement("alert_sub");
-    showElement("alert_border");
-    setText("alert_head", head);
-    setText("alert_sub", sub);
-
-    setTimeout(function() {
-        hideElement("alert_head");
-        hideElement("alert_sub");
-        setProperty("alert_border", "hidden", true);
-    }, 3000);
-}
 
 function limit_input(id) {
     onEvent(id, "input", function() {

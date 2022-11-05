@@ -19,7 +19,7 @@
 */
 
 var proj_name = null;
-var bpm = null;
+var bpm = null | 0;
 var MAX_INPUT_LENGTH = 24 | 0;
 
 setText("name","my_project");
@@ -43,8 +43,7 @@ function limit_input(id) {
     onEvent(id, "input", function() {
         var buf = getText(id);
         if (buf.length > MAX_INPUT_LENGTH) {
-            // Pop last char
-            setText(id, buf.slice(0, -1));
+            setText(id, buf.slice(0, MAX_INPUT_LENGTH));
         }
     });
 }
@@ -89,6 +88,7 @@ onEvent("start", "click", function() {
         alert("Warning!", "bpm must be between 10-400");
         return;
     }
+    bpm |= 0;
 
     setText("bpm_box", bpm + " bpm");
     setNumber("bpm_slider", getNumber("bpm"));
@@ -96,7 +96,7 @@ onEvent("start", "click", function() {
 });
 
 onEvent("bpm_slider", "input", function() {
-    bpm = getNumber("bpm_slider");
+    bpm = getNumber("bpm_slider") | 0;
     setText("bpm_box", bpm + " bpm");
 });
 
@@ -115,6 +115,5 @@ screen_to_onclick("filters_bb", "filters");
 screen_to_onclick("timeline_bbb", "timeline");
 screen_to_onclick("effects_bbb", "effects");
 screen_to_onclick("filters_bbb", "filters");
-
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

@@ -21,9 +21,89 @@
 var proj_name = null;
 var bpm = null | 0;
 var MAX_INPUT_LENGTH = 24 | 0;
+var screen_sel = null;
 
 setText("name","my_project");
 setText("bpm", "120");
+
+var ux_buttons = [];
+
+function a_button(
+id,
+text,
+x,
+y,
+width,
+height,
+text_color,
+background_color,
+font_size
+) {
+    button(id, text);
+    setPosition(id, x, y, width, height);
+    setProperty(id, "text-color", text_color);
+    setProperty(id, "background-color", background_color);
+    setProperty(id, "font-size", font_size);
+    setProperty(id, "border-width", 1);
+    setProperty(id, "border-color", rgb(77, 87, 95));
+    setProperty(id, "border-radius", 4);
+}
+
+var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
+var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.82)];
+
+var ux_buttons_drawn = false;
+
+function redraw_ux_buttons() {
+    if (ux_buttons_drawn) {
+        deleteElement("timeline_b");
+        deleteElement("effects_b");
+        deleteElement("filters_b");
+    }
+    ux_buttons_drawn = true;
+    var BUTTON_WIDTH = 100;
+    var BUTTON_HEIGHT = 40;
+
+    a_button(
+        "timeline_b",
+        "Timeline",
+        5,
+        10,
+        BUTTON_WIDTH,
+        BUTTON_HEIGHT,
+        BUTTON_TEXT_COLOR,
+        BUTTON_BG[(screen_sel == "timeline") | 0],
+        15
+    );
+
+    a_button(
+        "effects_b",
+        "Effects",
+        110,
+        10,
+        BUTTON_WIDTH,
+        BUTTON_HEIGHT,
+        BUTTON_TEXT_COLOR,
+        BUTTON_BG[(screen_sel == "effects") | 0],
+        15
+    );
+
+    a_button(
+        "filters_b",
+        "Filters",
+        215,
+        10,
+        BUTTON_WIDTH,
+        BUTTON_HEIGHT,
+        BUTTON_TEXT_COLOR,
+        BUTTON_BG[(screen_sel == "filters") | 0],
+        15
+    );
+
+    screen_to_onclick("timeline_b", "timeline");
+    screen_to_onclick("effects_b", "effects");
+    screen_to_onclick("filters_b", "filters");
+}
 
 function limit_input(id) {
     onEvent(id, "input", function() {
@@ -46,7 +126,9 @@ function number_input(id) {
 
 function screen_to_onclick(id, screen) {
     onEvent(id, "click", function() {
+        screen_sel = screen;
         setScreen(screen);
+        redraw_ux_buttons();
     });
 }
 
@@ -78,7 +160,9 @@ onEvent("start", "click", function() {
 
     setText("bpm_box", bpm + " bpm");
     setNumber("bpm_slider", getNumber("bpm"));
+    screen_sel = "timeline";
     setScreen("timeline");
+    redraw_ux_buttons();
 });
 
 onEvent("bpm_slider", "input", function() {
@@ -89,17 +173,5 @@ onEvent("bpm_slider", "input", function() {
 number_input("bpm");
 limit_input("bpm");
 limit_input("name");
-
-screen_to_onclick("timeline_b", "timeline");
-screen_to_onclick("effects_b", "effects");
-screen_to_onclick("filters_b", "filters");
-
-screen_to_onclick("timeline_bb", "timeline");
-screen_to_onclick("effects_bb", "effects");
-screen_to_onclick("filters_bb", "filters");
-
-screen_to_onclick("timeline_bbb", "timeline");
-screen_to_onclick("effects_bbb", "effects");
-screen_to_onclick("filters_bbb", "filters");
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

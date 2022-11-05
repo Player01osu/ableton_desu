@@ -11,13 +11,12 @@ function player() {
     });
 }
 
-var metronome_warn_timer = true;
+var metronome_warn = false;
 
 onEvent("bpm_slider", "input", function() {
-    if (metronome_toggle && playing && metronome_warn_timer) {
-        alert("Warning!", "Metronome will not be affected until re-played");
-        metronome_warn_timer = false;
-        setTimeout(function() {metronome_warn_timer = true}, 3000 | 0);
+    if (playing) {
+        stopTimedLoop();
+        player();
     }
 });
 

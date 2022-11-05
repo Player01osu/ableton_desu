@@ -252,6 +252,7 @@ function channel_rack_tab() {
     setPosition("test", 40, 305, 100, 100);
     tabs_insert_element(tabs, "test");
 }
+
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
 var metronome_toggle = false;
 
@@ -278,13 +279,12 @@ function player() {
     });
 }
 
-var metronome_warn_timer = true;
+var metronome_warn = false;
 
 onEvent("bpm_slider", "input", function() {
-    if (metronome_toggle && playing && metronome_warn_timer) {
-        alert("Warning!", "Metronome will not be affected until re-played");
-        metronome_warn_timer = false;
-        setTimeout(function() {metronome_warn_timer = true}, 3000 | 0);
+    if (playing) {
+        stopTimedLoop();
+        player();
     }
 });
 
@@ -392,9 +392,9 @@ function tabs_select(tabs, tab_name) {
 }
 
 function tabs_clear(tabs) {
-	tabs.elements_id.forEach(function(id) {
-		deleteElement(id);
-	});
+    tabs.elements_id.forEach(function(id) {
+        deleteElement(id);
+    });
     tabs.elements_id = [];
 }
 

@@ -265,11 +265,11 @@ limit_input("bpm");
 limit_input("name");
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
-var CHANNEL_RACK_BUTTON_RADIUS = 35 | 0;
-var CHANNEL_RACK_BUTTON_GAP = 20 | 0;
+var CHANNEL_RACK_BUTTON_RADIUS = 24 | 0;
+var CHANNEL_RACK_BUTTON_GAP = 19 | 0;
 var CHANNEL_RACK_BUTTON_Y_GAP = 40 | 0;
-var CHANNEL_RACK_BUTTON_OFFSET = -8 | 0;
-var CHANNEL_RACK_BUTTON_ICON_GAP = 40 | 0;
+var CHANNEL_RACK_BUTTON_OFFSET = 3 | 0;
+var CHANNEL_RACK_BUTTON_ICON_GAP = 38 | 0;
 var CHANNEL_RACK_BUTTON_ICON_SIZE = 35 | 0;
 var CHANNEL_RACK_BUTTON_Y = 280 | 0;
 
@@ -306,8 +306,8 @@ function channel_rack_icons(tab, element_id, url, n) {
         element_id,
         130,
         CHANNEL_RACK_BUTTON_Y
-            - (((CHANNEL_RACK_BUTTON_GAP + (16 | 0))
-            - ((CHANNEL_RACK_BUTTON_Y_GAP + (24 | 0)) * n))),
+            - (((CHANNEL_RACK_BUTTON_ICON_GAP)
+            - ((CHANNEL_RACK_BUTTON_Y_GAP + (22 | 0)) * n))),
         CHANNEL_RACK_BUTTON_ICON_SIZE,
         CHANNEL_RACK_BUTTON_ICON_SIZE
     );

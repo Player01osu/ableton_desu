@@ -56,7 +56,6 @@ function tabs_clear(tab) {
             hideElement(id);
         });
     }
-    //tabs.elements_id = [];
 }
 
 function tabs_show(tab) {

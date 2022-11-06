@@ -1,4 +1,4 @@
-![Ableton Desu](Ableton Desu)
+![Ableton Desu](./ableton_desu.png)
 
 ## Nate's Thing:
 

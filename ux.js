@@ -26,72 +26,6 @@ var proj_name = null;
 var bpm = null | 0;
 var screen_sel = null;
 
-function new_state(tabs, tab_default) {
-    var state = {
-        tabs: {
-            tab: [
-                //
-                //callback: function() {},
-                //loaded: false,
-                //name: null,
-                //id: null,
-                //elements_id: null
-                //
-            ],
-            created: false,
-            current: tab_default,
-        }
-    };
-
-    tabs.forEach(function(tab){
-        state.tabs.tab.push({
-            callback: function() {},
-            loaded: false,
-            name: tab,
-            id: tab.replace(' ', '_'),
-            elements_id: [],
-        });
-    });
-
-    return state;
-}
-
-var screen = {
-    start_proj: {
-        id: "start_proj",
-        state: null
-    },
-    timeline: {
-        id: "timeline",
-        state: new_state(
-            ["Channel Rack", "Sound Panel"],
-            "Channel Rack"
-        )
-    },
-    effects: {
-        id: "effects",
-        state: null
-    },
-    filters: {
-        id: "filters",
-        state: null
-    }
-};
-
-function set_tabs_callbacks(tabs, callbacks) {
-    callbacks.forEach(function(callback, idx) {
-        tabs.tab[idx].callback = callback;
-    });
-}
-
-set_tabs_callbacks(
-    screen.timeline.state.tabs,
-    [
-        function(){channel_rack_tab()},
-        function(){sound_panel_tab(screen.timeline)},
-    ]
-);
-
 onEvent("github", "click", function() {
     open("https://github.com/Player01osu/ableton_desu");
 });
@@ -178,7 +112,7 @@ function screen_to_onclick(id, screen_name) {
         screen_sel = screen_name.id;
         setScreen(screen_name.id);
         redraw_ux_buttons();
-        load_state(screen_name.state);
+        load_tab_state(screen_name.state);
     });
 }
 
@@ -234,25 +168,12 @@ onEvent("start", "click", function() {
     switch_screen(screen.timeline);
 });
 
-function load_state(state) {
-    if (state == null) {
-        return;
-    }
-
-    if (state.tabs.created) {
-        tabs_select(state.tabs, state.tabs.current);
-    } else {
-        tabs_create(state.tabs);
-        state.tabs.created = true;
-    }
-}
-
 function switch_screen(screen_name) {
     setScreen(screen_name.id);
     screen_sel = screen_name.id;
 
     redraw_ux_buttons(screen_name);
-    load_state(screen_name.state);
+    load_tab_state(screen_name.state);
 }
 
 onEvent("bpm_slider", "input", function() {

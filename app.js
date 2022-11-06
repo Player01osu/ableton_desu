@@ -178,7 +178,7 @@ function screen_to_onclick(id, screen_name) {
         screen_sel = screen_name.id;
         setScreen(screen_name.id);
         redraw_ux_buttons();
-        load_state(screen_name.state);
+        load_tab_state(screen_name.state);
     });
 }
 
@@ -234,7 +234,7 @@ onEvent("start", "click", function() {
     switch_screen(screen.timeline);
 });
 
-function load_state(state) {
+function load_tab_state(state) {
     if (state == null) {
         return;
     }
@@ -252,7 +252,7 @@ function switch_screen(screen_name) {
     screen_sel = screen_name.id;
 
     redraw_ux_buttons(screen_name);
-    load_state(screen_name.state);
+    load_tab_state(screen_name.state);
 }
 
 onEvent("bpm_slider", "input", function() {

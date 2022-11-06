@@ -1,12 +1,13 @@
+var TAB_BUTTON_HEIGHT = 24 | 0;
+var TAB_BUTTON_GAP = 4 | 0;
+var TAB_BUTTON_Y = 210 | 0;
+var TAB_BUTTON_FONT_SIZE = 10 | 0;
+
 /// Takes in array of strings, and creates
 /// tab buttons.
 function tabs_create(tabs) {
     var len = tabs.list.length | 0;
-    var BUTTON_WIDTH = (300 / len) | 0;
-    var BUTTON_HEIGHT = 24 | 0;
-    var BUTTON_GAP = 4 | 0;
-    var BUTTON_Y = 230 | 0;
-    var BUTTON_FONT_SIZE = 10 | 0;
+    var TAB_BUTTON_WIDTH = (300 / len) | 0;
 
     tabs.list.forEach(function(tab_name, idx) {
         var tab_id = tab_name.replace(' ', '_');
@@ -16,13 +17,13 @@ function tabs_create(tabs) {
         a_button(
             tab_id,
             tab_name,
-            ((idx * (BUTTON_GAP + BUTTON_WIDTH))) + 2 | 0,
-            BUTTON_Y,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT,
+            ((idx * (TAB_BUTTON_GAP + TAB_BUTTON_WIDTH))) + 8 | 0,
+            TAB_BUTTON_Y,
+            TAB_BUTTON_WIDTH,
+            TAB_BUTTON_HEIGHT,
             BUTTON_TEXT_COLOR,
             BUTTON_BG[(tabs.current === tab_name) | 0],
-            BUTTON_FONT_SIZE
+            TAB_BUTTON_FONT_SIZE
         );
 
         onEvent(tab_id, "click", function() {

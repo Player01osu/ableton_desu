@@ -1,6 +1,6 @@
 /*
  * Great question! Short answer: Game Lab & App Lab only support $ES5 features$ for
- * now. const and let, unfortunately, weren’t added until ES6.
+ * now. const and let, unfortunately, weren't added until ES6.
  *
  * Long answer: JavaScript does support other keywords for variable declaration as
  * you mentioned. We use const and let all the time in our own code base. These are
@@ -12,11 +12,12 @@
  * fancy piece of software, was designed to work with the previous version of the
  * JavaScript spec, ES5. It is a goal of ours to eventually be able to support all
  * the new language features that are part of ES6, but it will be a lot of work to
- * get there. So, in the meantime, we’re stuck with only var.
+ * get there. So, in the meantime, we're stuck with only var.
  *
  * -Jessica, Code.org 3 Engineer
  * Feb 2020
  */
+
 var MAX_INPUT_LENGTH = 24 | 0;
 var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
 var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.82)];
@@ -47,7 +48,7 @@ var screen = {
     timeline: {
         id: "timeline",
         state: new_state(
-            ["nut", "Channel Rack"],
+            ["Channel Rack"],
             "Channel Rack"
         )
     },
@@ -70,24 +71,27 @@ function set_tabs_callbacks(tabs, callbacks) {
 set_tabs_callbacks(
     screen.timeline.state.tabs,
     [
-        function(){tabs_clear(screen.timeline.state.tabs)},
         function(){channel_rack_tab()}
     ]
 );
+
+onEvent("github", "click", function() {
+    open("https://github.com/Player01osu/ableton_desu");
+});
 
 setText("name","my_project");
 setText("bpm", "120");
 
 function a_button(
-id,
-text,
-x,
-y,
-width,
-height,
-text_color,
-background_color,
-font_size
+    id,
+    text,
+    x,
+    y,
+    width,
+    height,
+    text_color,
+    background_color,
+    font_size
 ) {
     button(id, text);
     setPosition(id, x, y, width, height);

@@ -1,6 +1,6 @@
 /*
  * Great question! Short answer: Game Lab & App Lab only support $ES5 features$ for
- * now. const and let, unfortunately, weren’t added until ES6.
+ * now. const and let, unfortunately, weren't added until ES6.
  *
  * Long answer: JavaScript does support other keywords for variable declaration as
  * you mentioned. We use const and let all the time in our own code base. These are
@@ -12,11 +12,12 @@
  * fancy piece of software, was designed to work with the previous version of the
  * JavaScript spec, ES5. It is a goal of ours to eventually be able to support all
  * the new language features that are part of ES6, but it will be a lot of work to
- * get there. So, in the meantime, we’re stuck with only var.
+ * get there. So, in the meantime, we're stuck with only var.
  *
  * -Jessica, Code.org 3 Engineer
  * Feb 2020
  */
+
 var MAX_INPUT_LENGTH = 24 | 0;
 var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
 var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.82)];
@@ -47,7 +48,7 @@ var screen = {
     timeline: {
         id: "timeline",
         state: new_state(
-            ["nut", "Channel Rack"],
+            ["Channel Rack"],
             "Channel Rack"
         )
     },
@@ -70,24 +71,27 @@ function set_tabs_callbacks(tabs, callbacks) {
 set_tabs_callbacks(
     screen.timeline.state.tabs,
     [
-        function(){tabs_clear(screen.timeline.state.tabs)},
         function(){channel_rack_tab()}
     ]
 );
+
+onEvent("github", "click", function() {
+    open("https://github.com/Player01osu/ableton_desu");
+});
 
 setText("name","my_project");
 setText("bpm", "120");
 
 function a_button(
-id,
-text,
-x,
-y,
-width,
-height,
-text_color,
-background_color,
-font_size
+    id,
+    text,
+    x,
+    y,
+    width,
+    height,
+    text_color,
+    background_color,
+    font_size
 ) {
     button(id, text);
     setPosition(id, x, y, width, height);
@@ -244,59 +248,206 @@ limit_input("bpm");
 limit_input("name");
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+var CHANNEL_RACK_BUTTON_RADIUS = 35 | 0;
+var CHANNEL_RACK_BUTTON_GAP = 20 | 0;
+var CHANNEL_RACK_BUTTON_Y_GAP = 40 | 0;
+var CHANNEL_RACK_BUTTON_OFFSET = -8 | 0;
+var CHANNEL_RACK_BUTTON_ICON_GAP = 40 | 0;
+var CHANNEL_RACK_BUTTON_ICON_SIZE = 35 | 0;
+var CHANNEL_RACK_BUTTON_Y = 280 | 0;
+
+function fill_n_false(n) {
+    var array = [];
+    for (i = 0 | 0; i < (n | 0); ++i) {
+        array.push(false);
+    }
+    return array
+}
+
+var channel_rack = {
+    snare: {
+        beats: fill_n_false(16 | 0),
+        name: "snare"
+    },
+    kick: {
+        beats: fill_n_false(16 | 0),
+        name: "kick"
+    },
+    hihat: {
+        beats: fill_n_false(16 | 0),
+        name: "hihat"
+    }
+};
+
+function channel_rack_icons(tabs, element_id, url, n) {
+    image(
+        element_id,
+        url
+    );
+
+    setPosition(
+        element_id,
+        130,
+        CHANNEL_RACK_BUTTON_Y
+            - (((CHANNEL_RACK_BUTTON_GAP + (16 | 0))
+            - ((CHANNEL_RACK_BUTTON_Y_GAP + (24 | 0)) * n))),
+        CHANNEL_RACK_BUTTON_ICON_SIZE,
+        CHANNEL_RACK_BUTTON_ICON_SIZE
+    );
+
+    tabs_insert_element(tabs, element_id);
+}
+
 function channel_rack_tab() {
     var tabs = screen.timeline.state.tabs;
     tabs_clear(tabs);
+    channel_rack_icons(
+        tabs,
+        "snare_icon",
+        "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
+        0 | 0
+    );
 
-    textLabel("test", "test");
-    setPosition("test", 40, 305, 100, 100);
-    tabs_insert_element(tabs, "test");
+    channel_rack_icons(
+        tabs,
+        "kick_icon",
+        "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
+        1 | 0
+    );
+
+    channel_rack_icons(
+        tabs,
+        "hihat",
+        "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
+        2 | 0
+    );
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tabs, i, channel_rack.snare);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tabs, i, channel_rack.kick);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tabs, i, channel_rack.hihat);
+    }
+}
+
+function channel_rack_buttons(tabs, idx, sample) {
+    var element_id = sample.name + idx;
+    if (sample.beats[idx]) {
+        image(element_id, "icon://fa-circle");
+    } else {
+        image(element_id, "icon://fa-circle-thin");
+    }
+
+    var y = CHANNEL_RACK_BUTTON_Y;
+
+    if (sample.name === "snare") {
+        y += CHANNEL_RACK_BUTTON_GAP * 0 | 0;
+    }
+
+    if (sample.name === "kick") {
+        y += (CHANNEL_RACK_BUTTON_GAP + CHANNEL_RACK_BUTTON_Y_GAP) * (1 | 0) | 0;
+    }
+
+    if (sample.name === "hihat") {
+        y += (CHANNEL_RACK_BUTTON_GAP + CHANNEL_RACK_BUTTON_Y_GAP) * (2 | 0) | 0;
+    }
+
+    setPosition(
+        element_id,
+        (idx * CHANNEL_RACK_BUTTON_GAP) + CHANNEL_RACK_BUTTON_OFFSET,
+        y,
+        CHANNEL_RACK_BUTTON_RADIUS,
+        CHANNEL_RACK_BUTTON_RADIUS
+    );
+
+    onEvent(element_id, "click", function() {
+        var is_checked = sample.beats[idx];
+        if (is_checked) {
+            setImageURL(element_id, "icon://fa-circle-thin");
+        } else {
+            setImageURL(element_id, "icon://fa-circle");
+        }
+        sample.beats[idx] = !is_checked;
+    });
+
+    tabs_insert_element(tabs, element_id);
 }
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
-var metronome_toggle = false;
+var metronome = {
+    toggle: false,
+    beat_divisor: 1
+};
 
 onEvent("metronome_button", "click", function() {
-    if (!metronome_toggle) {
+    if (!metronome.toggle) {
         setProperty("metronome_button", "border-width", 5 | 0);
     } else {
         setProperty("metronome_button", "border-width", 0 | 0);
     }
-    metronome_toggle = !metronome_toggle;
+    metronome.toggle = !metronome.toggle;
 });
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
-
-var playing = false;
+var playback = {
+    toggle: false,
+    beat_divisor: 0 | 0,
+    beat: 0 | 0,
+    beat_sub: 0 | 0
+};
 
 function player() {
-    var t = (((60 | 0) * (1000 | 0)) / bpm) | 0;
+    var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
 
     timedLoop(t, function() {
-        if (metronome_toggle) {
+        if (metronome.toggle && playback.beat_divisor == 0) {
             playSound("soft-hitnormal.mp3", false);
         }
+
+        if (channel_rack.snare.beats[playback.beat_sub]) {
+            playSound("normal-hitclap2.mp3", false);
+        }
+
+        if (channel_rack.kick.beats[playback.beat_sub]) {
+            playSound("drum-hitwhistle.mp3", false);
+        }
+
+        if (channel_rack.hihat.beats[playback.beat_sub]) {
+            playSound("drum-hitnormalh.mp3", false);
+        }
+
+        if (playback.beat_divisor === 0) {
+            playback.beat = ((playback.beat + 1) % 4) | 0;
+        }
+
+        playback.beat_divisor = ((playback.beat_divisor + 1) % 4) | 0;
+        playback.beat_sub = ((playback.beat_sub + 1) % 16) | 0;
     });
 }
 
 var metronome_warn = false;
 
 onEvent("bpm_slider", "input", function() {
-    if (playing) {
+    if (playback.toggle) {
         stopTimedLoop();
         player();
     }
 });
 
 onEvent("play_button", "click", function() {
-    if (!playing) {
+    if (!playback.toggle) {
         setImageURL("play_button", "icon://fa-pause");
         player();
     } else {
         setImageURL("play_button", "icon://fa-play");
         stopTimedLoop();
     }
-    playing = !playing;
+    playback.toggle = !playback.toggle;
 });
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
@@ -342,15 +493,16 @@ function alert(head, sub) {
 }
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+var TAB_BUTTON_HEIGHT = 24 | 0;
+var TAB_BUTTON_GAP = 4 | 0;
+var TAB_BUTTON_Y = 210 | 0;
+var TAB_BUTTON_FONT_SIZE = 10 | 0;
+
 /// Takes in array of strings, and creates
 /// tab buttons.
 function tabs_create(tabs) {
     var len = tabs.list.length | 0;
-    var BUTTON_WIDTH = (300 / len) | 0;
-    var BUTTON_HEIGHT = 24 | 0;
-    var BUTTON_GAP = 4 | 0;
-    var BUTTON_Y = 230 | 0;
-    var BUTTON_FONT_SIZE = 10 | 0;
+    var TAB_BUTTON_WIDTH = (300 / len) | 0;
 
     tabs.list.forEach(function(tab_name, idx) {
         var tab_id = tab_name.replace(' ', '_');
@@ -360,13 +512,13 @@ function tabs_create(tabs) {
         a_button(
             tab_id,
             tab_name,
-            ((idx * (BUTTON_GAP + BUTTON_WIDTH))) + 2 | 0,
-            BUTTON_Y,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT,
+            ((idx * (TAB_BUTTON_GAP + TAB_BUTTON_WIDTH))) + 8 | 0,
+            TAB_BUTTON_Y,
+            TAB_BUTTON_WIDTH,
+            TAB_BUTTON_HEIGHT,
             BUTTON_TEXT_COLOR,
             BUTTON_BG[(tabs.current === tab_name) | 0],
-            BUTTON_FONT_SIZE
+            TAB_BUTTON_FONT_SIZE
         );
 
         onEvent(tab_id, "click", function() {

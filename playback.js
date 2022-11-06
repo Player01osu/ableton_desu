@@ -5,7 +5,7 @@ var playback = {
     beat_sub: 0 | 0
 };
 
-function player() {
+function playback() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
 
     timedLoop(t, function() {
@@ -39,14 +39,14 @@ var metronome_warn = false;
 onEvent("bpm_slider", "input", function() {
     if (playback.toggle) {
         stopTimedLoop();
-        player();
+        playback();
     }
 });
 
 onEvent("play_button", "click", function() {
     if (!playback.toggle) {
         setImageURL("play_button", "icon://fa-pause");
-        player();
+        playback();
     } else {
         setImageURL("play_button", "icon://fa-play");
         stopTimedLoop();

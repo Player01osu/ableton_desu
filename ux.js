@@ -20,7 +20,7 @@
 
 var MAX_INPUT_LENGTH = 24 | 0;
 var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
-var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.82)];
+var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.50)];
 
 var proj_name = null;
 var bpm = null | 0;
@@ -29,13 +29,29 @@ var screen_sel = null;
 function new_state(tabs, tab_default) {
     var state = {
         tabs: {
-            callbacks: [],
+            tab: [
+                //
+                //callback: function() {},
+                //loaded: false,
+                //name: null,
+                //id: null,
+                //elements_id: null
+                //
+            ],
             created: false,
             current: tab_default,
-            list: tabs,
-            elements_id: []
         }
     };
+
+    tabs.forEach(function(tab){
+        state.tabs.tab.push({
+            callback: function() {},
+            loaded: false,
+            name: tab,
+            id: tab.replace(' ', '_'),
+            elements_id: [],
+        });
+    });
 
     return state;
 }
@@ -48,7 +64,7 @@ var screen = {
     timeline: {
         id: "timeline",
         state: new_state(
-            ["Channel Rack"],
+            ["Channel Rack", "Sound Panel"],
             "Channel Rack"
         )
     },
@@ -63,15 +79,16 @@ var screen = {
 };
 
 function set_tabs_callbacks(tabs, callbacks) {
-    callbacks.forEach(function(callback) {
-        tabs.callbacks.push(callback);
+    callbacks.forEach(function(callback, idx) {
+        tabs.tab[idx].callback = callback;
     });
 }
 
 set_tabs_callbacks(
     screen.timeline.state.tabs,
     [
-        function(){channel_rack_tab()}
+        function(){channel_rack_tab()},
+        function(){sound_panel_tab(screen.timeline)},
     ]
 );
 

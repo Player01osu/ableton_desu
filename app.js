@@ -20,7 +20,7 @@
 
 var MAX_INPUT_LENGTH = 24 | 0;
 var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
-var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.82)];
+var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.50)];
 
 var proj_name = null;
 var bpm = null | 0;
@@ -29,13 +29,29 @@ var screen_sel = null;
 function new_state(tabs, tab_default) {
     var state = {
         tabs: {
-            callbacks: [],
+            tab: [
+                //
+                //callback: function() {},
+                //loaded: false,
+                //name: null,
+                //id: null,
+                //elements_id: null
+                //
+            ],
             created: false,
             current: tab_default,
-            list: tabs,
-            elements_id: []
         }
     };
+
+    tabs.forEach(function(tab){
+        state.tabs.tab.push({
+            callback: function() {},
+            loaded: false,
+            name: tab,
+            id: tab.replace(' ', '_'),
+            elements_id: [],
+        });
+    });
 
     return state;
 }
@@ -48,7 +64,7 @@ var screen = {
     timeline: {
         id: "timeline",
         state: new_state(
-            ["Channel Rack"],
+            ["Channel Rack", "Sound Panel"],
             "Channel Rack"
         )
     },
@@ -63,15 +79,16 @@ var screen = {
 };
 
 function set_tabs_callbacks(tabs, callbacks) {
-    callbacks.forEach(function(callback) {
-        tabs.callbacks.push(callback);
+    callbacks.forEach(function(callback, idx) {
+        tabs.tab[idx].callback = callback;
     });
 }
 
 set_tabs_callbacks(
     screen.timeline.state.tabs,
     [
-        function(){channel_rack_tab()}
+        function(){channel_rack_tab()},
+        function(){sound_panel_tab(screen.timeline)},
     ]
 );
 
@@ -279,7 +296,7 @@ var channel_rack = {
     }
 };
 
-function channel_rack_icons(tabs, element_id, url, n) {
+function channel_rack_icons(tab, element_id, url, n) {
     image(
         element_id,
         url
@@ -295,47 +312,59 @@ function channel_rack_icons(tabs, element_id, url, n) {
         CHANNEL_RACK_BUTTON_ICON_SIZE
     );
 
-    tabs_insert_element(tabs, element_id);
+    tabs_insert_element(tab, element_id);
 }
 
 function channel_rack_tab() {
-    var tabs = screen.timeline.state.tabs;
-    tabs_clear(tabs);
-    channel_rack_icons(
-        tabs,
-        "snare_icon",
-        "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
-        0 | 0
-    );
-
-    channel_rack_icons(
-        tabs,
-        "kick_icon",
-        "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
-        1 | 0
-    );
-
-    channel_rack_icons(
-        tabs,
-        "hihat",
-        "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
-        2 | 0
-    );
-
-    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-        channel_rack_buttons(tabs, i, channel_rack.snare);
+    var tab_idx = 0;
+    for (; tab_idx < screen.timeline.state.tabs.tab.length; ++tab_idx) {
+        if (screen.timeline.state.tabs.tab[tab_idx].name === "Channel Rack") {
+            break;
+        }
     }
 
-    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-        channel_rack_buttons(tabs, i, channel_rack.kick);
-    }
+    var tab = screen.timeline.state.tabs.tab[tab_idx];
+    if (tab.loaded) {
+        tabs_show(tab);
+    } else {
+        channel_rack_icons(
+            tab,
+            "snare_icon",
+            "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
+            0 | 0
+        );
 
-    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-        channel_rack_buttons(tabs, i, channel_rack.hihat);
+        channel_rack_icons(
+            tab,
+            "kick_icon",
+            "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
+            1 | 0
+        );
+
+        channel_rack_icons(
+            tab,
+            "hihat",
+            "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
+            2 | 0
+        );
+
+        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+            channel_rack_buttons(tab, i, channel_rack.snare);
+        }
+
+        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+            channel_rack_buttons(tab, i, channel_rack.kick);
+        }
+
+        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+            channel_rack_buttons(tab, i, channel_rack.hihat);
+        }
+
+        tab.loaded = true;
     }
 }
 
-function channel_rack_buttons(tabs, idx, sample) {
+function channel_rack_buttons(tab, idx, sample) {
     var element_id = sample.name + idx;
     if (sample.beats[idx]) {
         image(element_id, "icon://fa-circle");
@@ -375,7 +404,7 @@ function channel_rack_buttons(tabs, idx, sample) {
         sample.beats[idx] = !is_checked;
     });
 
-    tabs_insert_element(tabs, element_id);
+    tabs_insert_element(tab, element_id);
 }
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
@@ -394,6 +423,18 @@ onEvent("metronome_button", "click", function() {
 });
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+var audio = {
+	master_audio: 100,
+	snare: 90,
+	kick: 60,
+	hihat: 70
+};
+
+function sound_panel_tab(screen_name) {
+	//var tabs = screen_name.state.tabs;
+	//tabs_clear(tabs);
+
+}
 var playback = {
     toggle: false,
     beat_divisor: 0 | 0,
@@ -501,57 +542,69 @@ var TAB_BUTTON_FONT_SIZE = 10 | 0;
 /// Takes in array of strings, and creates
 /// tab buttons.
 function tabs_create(tabs) {
-    var len = tabs.list.length | 0;
+    var len = tabs.tab.length | 0;
     var TAB_BUTTON_WIDTH = (300 / len) | 0;
 
-    tabs.list.forEach(function(tab_name, idx) {
-        var tab_id = tab_name.replace(' ', '_');
-        if (tabs.current === tab_name) {
-            tabs.callbacks[idx]();
+    tabs.tab.forEach(function(tab, idx) {
+        if (tabs.current === tab.name) {
+            tab.callback();
         }
         a_button(
-            tab_id,
-            tab_name,
+            tab.id,
+            tab.name,
             ((idx * (TAB_BUTTON_GAP + TAB_BUTTON_WIDTH))) + 8 | 0,
             TAB_BUTTON_Y,
             TAB_BUTTON_WIDTH,
             TAB_BUTTON_HEIGHT,
             BUTTON_TEXT_COLOR,
-            BUTTON_BG[(tabs.current === tab_name) | 0],
+            BUTTON_BG[(tabs.current === tab.name) | 0],
             TAB_BUTTON_FONT_SIZE
         );
 
-        onEvent(tab_id, "click", function() {
-            tabs_select(tabs, tab_name);
+        onEvent(tab.id, "click", function() {
+            tabs_select(tabs, tab.name);
         });
     });
 }
 
 function tabs_select(tabs, tab_name) {
-    tabs.current = tab_name;
-    tabs.list.forEach(function(tab_name, idx) {
-        var tab_id = tab_name.replace(' ', '_');
-        if (tabs.current === tab_name) {
-            tabs.callbacks[idx]();
+    tabs.tab.forEach(function(tab) {
+        if (tabs.current === tab.name) {
+            tabs_clear(tab);
         }
-
+    });
+    tabs.current = tab_name;
+    tabs.tab.forEach(function(tab) {
+        if (tabs.current === tab.name) {
+            tab.callback();
+        }
         setProperty(
-            tab_id,
+            tab.id,
             "background-color",
-            BUTTON_BG[(tabs.current === tab_name) | 0]
+            BUTTON_BG[(tabs.current === tab.name) | 0]
         );
     });
 }
 
-function tabs_clear(tabs) {
-    tabs.elements_id.forEach(function(id) {
-        deleteElement(id);
-    });
-    tabs.elements_id = [];
+function tabs_clear(tab) {
+    if (tab != null) {
+        tab.elements_id.forEach(function(id) {
+            hideElement(id);
+        });
+    }
+    //tabs.elements_id = [];
 }
 
-function tabs_insert_element(tabs, element_id) {
-    tabs.elements_id.push(element_id);
+function tabs_show(tab) {
+    if (tab != null) {
+        tab.elements_id.forEach(function(id) {
+            showElement(id);
+        });
+    }
+}
+
+function tabs_insert_element(tab, element_id) {
+    tab.elements_id.push(element_id);
 }
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

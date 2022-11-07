@@ -1,4 +1,4 @@
-FILES := ux.js state.js timeline/*.js  playback.js alert.js tabs.js
+FILES := ux.js state.js alert.js tabs.js tooltip.js playback.js queue.js timeline/*.js
 OUTPUT := "app.js"
 
 all:

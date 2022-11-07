@@ -563,6 +563,10 @@ var playback = {
 
 function playback_start() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
+    playback.beat_divisor = 0 | 0;
+    playback.beat = 0 | 0;
+    playback.beat_sub = 0 | 0;
+
     if (!metronome.toggle && channel_rack_is_empty()) {
         alert("Warning!", "Nothing is activated");
     }
@@ -612,8 +616,6 @@ onEvent("play_button", "click", function() {
     }
     playback.toggle = !playback.toggle;
 });
-
-console.log(setTimeout(function() {}, 4000));
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
 

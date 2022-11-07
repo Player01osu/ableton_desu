@@ -7,6 +7,10 @@ var playback = {
 
 function playback_start() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
+    playback.beat_divisor = 0 | 0;
+    playback.beat = 0 | 0;
+    playback.beat_sub = 0 | 0;
+
     if (!metronome.toggle && channel_rack_is_empty()) {
         alert("Warning!", "Nothing is activated");
     }

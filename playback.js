@@ -37,21 +37,22 @@ function playback_start() {
 }
 
 var metronome_warn = false;
+var playback_handler = null;
 
 onEvent("bpm_slider", "input", function() {
     if (playback.toggle) {
-        stopTimedLoop();
-        playback_start();
+        stopTimedLoop(playback_handler);
+        playback_handler = playback_start();
     }
 });
 
 onEvent("play_button", "click", function() {
     if (!playback.toggle) {
         setImageURL("play_button", "icon://fa-pause");
-        playback_start();
+        playback_handler = playback_start();
     } else {
         setImageURL("play_button", "icon://fa-play");
-        stopTimedLoop();
+        stopTimedLoop(playback_handler);
     }
     playback.toggle = !playback.toggle;
 });

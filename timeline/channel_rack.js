@@ -29,6 +29,21 @@ var channel_rack = {
     }
 };
 
+function channel_rack_is_beat(idx) {
+    return channel_rack.snare.beats[idx] ||
+        channel_rack.kick.beats[idx] ||
+        channel_rack.hihat.beats[idx];
+}
+
+function channel_rack_is_empty() {
+    for (var i = 0; i < 16; ++i) {
+        if (channel_rack_is_beat(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function channel_rack_icons(tab, element_id, url, n) {
     image(
         element_id,
@@ -40,7 +55,7 @@ function channel_rack_icons(tab, element_id, url, n) {
         130,
         CHANNEL_RACK_BUTTON_Y
             - (((CHANNEL_RACK_BUTTON_ICON_GAP)
-            - ((CHANNEL_RACK_BUTTON_Y_GAP + (22 | 0)) * n))),
+            - ((CHANNEL_RACK_BUTTON_Y_GAP + (23 | 0)) * n))),
         CHANNEL_RACK_BUTTON_ICON_SIZE,
         CHANNEL_RACK_BUTTON_ICON_SIZE
     );

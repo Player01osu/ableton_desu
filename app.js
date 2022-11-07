@@ -563,8 +563,10 @@ var playback = {
 
 function playback_start() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
-
-    timedLoop(t, function() {
+    if (!metronome.toggle && channel_rack_is_empty()) {
+        alert("Warning!", "Nothing is activated");
+    }
+    return timedLoop(t, function() {
         if (metronome.toggle && playback.beat_divisor == 0) {
             playSound("soft-hitnormal.mp3", false);
         }
@@ -591,24 +593,27 @@ function playback_start() {
 }
 
 var metronome_warn = false;
+var playback_handler = null;
 
 onEvent("bpm_slider", "input", function() {
     if (playback.toggle) {
-        stopTimedLoop();
-        playback_start();
+        stopTimedLoop(playback_handler);
+        playback_handler = playback_start();
     }
 });
 
 onEvent("play_button", "click", function() {
     if (!playback.toggle) {
         setImageURL("play_button", "icon://fa-pause");
-        playback_start();
+        playback_handler = playback_start();
     } else {
         setImageURL("play_button", "icon://fa-play");
-        stopTimedLoop();
+        stopTimedLoop(playback_handler);
     }
     playback.toggle = !playback.toggle;
 });
+
+console.log(setTimeout(function() {}, 4000));
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
 
@@ -673,6 +678,21 @@ var channel_rack = {
     }
 };
 
+function channel_rack_is_beat(idx) {
+    return channel_rack.snare.beats[idx] ||
+        channel_rack.kick.beats[idx] ||
+        channel_rack.hihat.beats[idx];
+}
+
+function channel_rack_is_empty() {
+    for (var i = 0; i < 16; ++i) {
+        if (channel_rack_is_beat(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function channel_rack_icons(tab, element_id, url, n) {
     image(
         element_id,
@@ -684,7 +704,7 @@ function channel_rack_icons(tab, element_id, url, n) {
         130,
         CHANNEL_RACK_BUTTON_Y
             - (((CHANNEL_RACK_BUTTON_ICON_GAP)
-            - ((CHANNEL_RACK_BUTTON_Y_GAP + (22 | 0)) * n))),
+            - ((CHANNEL_RACK_BUTTON_Y_GAP + (23 | 0)) * n))),
         CHANNEL_RACK_BUTTON_ICON_SIZE,
         CHANNEL_RACK_BUTTON_ICON_SIZE
     );

@@ -1,40 +1,77 @@
 var alert_n = 0 | 0;
-function alert_border(n) {
-    image("alert_border" + "_" + n, "Untitled.png");
-    setProperty("alert_border" + "_" + n, "width", 130);
-    setProperty("alert_border" + "_" + n, "height", 83);
-    setProperty("alert_border" + "_" + n, "x", 180);
-    setProperty("alert_border" + "_" + n, "y", 10);
-    setProperty("alert_border" + "_" + n, "fit", "fill");
-    setProperty("alert_border" + "_" + n, "border-width", 6);
-    setProperty("alert_border" + "_" + n, "border-color", rgb(159, 159, 159, 0.9));
+
+var ALERT_BORDER_WIDTH = 130 | 0;
+var ALERT_BORDER_HEIGHT = 83 | 0;
+var ALERT_BORDER_Y_OFFSET = 10 | 0;
+
+function alert_border(id) {
+    var alert_border_id = "alert_border_" + id;
+    var y = ALERT_BORDER_Y_OFFSET + (ALERT_BORDER_HEIGHT * queue_length(alert_queue));
+
+    // TODO When queue pops, move other notifs up.
+    image(alert_border_id, "icon://fa-stop");
+    setPosition(alert_border_id, 180, y, ALERT_BORDER_WIDTH, ALERT_BORDER_HEIGHT);
+    setProperty(alert_border_id, "fit", "none");
+    setProperty(alert_border_id, "icon-color", rgb(218,92,201,0.9));
+    setProperty(alert_border_id, "border-width", 6);
+    setProperty(alert_border_id, "border-color", rgb(159, 159, 159, 0.9));
+
+    return alert_border_id;
 }
 
-function alert_head(text, n) {
-    textLabel("alert_head" + "_" + n, text);
-    setPosition("alert_head" + "_" + n, 190, 20, 100, 25);
-    setProperty("alert_head" + "_" + n, "text-color", rgb(181, 188, 193));
-    setProperty("alert_head" + "_" + n, "font-size", 14);
+var ALERT_HEAD_WIDTH = 100 | 0;
+var ALERT_HEAD_HEIGHT = 25 | 0;
+var ALERT_HEAD_Y_OFFSET = 20 | 0;
+
+function alert_head(text, id) {
+    var alert_head_id = "alert_head_" + id;
+    var y = ALERT_HEAD_Y_OFFSET + (ALERT_BORDER_HEIGHT * queue_length(alert_queue));
+
+    textLabel(alert_head_id, text);
+    setPosition(alert_head_id, 190, y, ALERT_HEAD_WIDTH, ALERT_HEAD_HEIGHT);
+    setProperty(alert_head_id, "text-color", rgb(181, 188, 193));
+    setProperty(alert_head_id, "font-size", 14);
+    return alert_head_id;
 }
 
-function alert_sub(text, n) {
-    textLabel("alert_sub" + "_" + n, text);
-    setPosition("alert_sub" + "_" + n, 190, 40, 125, 50);
-    setProperty("alert_sub" + "_" + n, "text-color", rgb(181, 188, 193));
-    setProperty("alert_sub" + "_" + n, "font-size", 11);
+var ALERT_SUB_WIDTH = 125 | 0;
+var ALERT_SUB_HEIGHT = 50 | 0;
+var ALERT_SUB_Y_OFFSET = 40 | 0;
+
+function alert_sub(text, id) {
+    var alert_sub_id = "alert_sub_" + id;
+    var y = ALERT_SUB_Y_OFFSET + (ALERT_BORDER_HEIGHT * queue_length(alert_queue));
+
+    textLabel(alert_sub_id, text);
+    setPosition(alert_sub_id, 190, y, ALERT_SUB_WIDTH, ALERT_SUB_HEIGHT);
+    setProperty(alert_sub_id, "text-color", rgb(181, 188, 193));
+    setProperty(alert_sub_id, "font-size", 11);
+    return alert_sub_id;
 }
+
+var alert_queue = queue_new();
+var alert_n = 0 | 0;
 
 function alert(head, sub) {
-    alert_border(alert_n);
-    alert_head(head, alert_n);
-    alert_sub(sub, alert_n);
+    var border_id = alert_border(alert_n);
+    var head_id = alert_head(head, alert_n);
+    var sub_id = alert_sub(sub, alert_n);
 
-    var alert_n_scoped = alert_n;
+    var alert_this = {
+        border_id: border_id,
+        head_id: head_id,
+        sub_id: sub_id
+    };
+    queue_enqueue(alert_queue, alert_this);
+
     setTimeout(function() {
-        deleteElement("alert_head" + "_" + alert_n_scoped);
-        deleteElement("alert_sub" + "_" + alert_n_scoped);
-        deleteElement("alert_border" + "_" + alert_n_scoped);
-        --alert_n;
+        var alert_pop = queue_dequeue(alert_queue);
+        var le_head_id = alert_pop.head_id;
+        var le_border_id = alert_pop.border_id;
+        var le_sub_id = alert_pop.sub_id;
+        deleteElement(le_head_id);
+        deleteElement(le_border_id);
+        deleteElement(le_sub_id);
     }, 3000 | 0);
     ++alert_n;
 }

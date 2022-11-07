@@ -54,6 +54,61 @@ function a_button(
     setProperty(id, "border-radius", 4 | 0);
 }
 
+function messagePosition(message, position) {
+    setPosition(message.text.id, position.x, position.y, position.w, position.h);
+    setPosition(message.background.id, position.x, position.y, position.w, position.h);
+}
+
+function messageProperty(message, property, value) {
+    setProperty(message.text.id, property, value);
+    setProperty(message.background.id, property, value);
+}
+
+/// Position object must contain an x and y
+/// Size object {w: int, h: int}
+function new_message(id, content, position, size) {
+    if (!isFinite(position.x) || !isFinite(position.y)) {
+        console.log("Invalid position argument");
+        return null;
+    }
+
+    var message = {
+        text: {
+            id: id + "_message_content",
+            content: content
+        },
+        background: {
+            id: id + "_message_background",
+        },
+        position: position,
+        size: size
+    };
+
+    var background = message.background;
+    image(background.id, "icon://fa-stop");
+    setProperty(background.id, "fit", "none");
+    setProperty(background.id, "icon-color", rgb(218 , 92, 201, 0.9));
+    setProperty(background.id, "border-width", 2 | 0);
+    setProperty(background.id, "border-color", rgb(159, 159, 159, 0.9));
+
+    var text = message.text;
+    textLabel(text.id, text.content);
+    setProperty(text.id, "text-align", "center");
+    setProperty(text.id, "font-size", 11 | 0);
+
+    messagePosition(
+        message,
+        {
+            x: message.position.x,
+            y: message.position.y,
+            w: message.size.w,
+            h: message.size.h
+        }
+    );
+
+    return message;
+}
+
 var ux_buttons_drawn = false;
 
 function redraw_ux_buttons() {

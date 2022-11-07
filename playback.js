@@ -7,8 +7,10 @@ var playback = {
 
 function playback_start() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
-
-    timedLoop(t, function() {
+    if (!metronome.toggle && channel_rack_is_empty()) {
+        alert("Warning!", "Nothing is activated");
+    }
+    return timedLoop(t, function() {
         if (metronome.toggle && playback.beat_divisor == 0) {
             playSound("soft-hitnormal.mp3", false);
         }

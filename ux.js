@@ -26,72 +26,6 @@ var proj_name = null;
 var bpm = null | 0;
 var screen_sel = null;
 
-function new_state(tabs, tab_default) {
-    var state = {
-        tabs: {
-            tab: [
-                //
-                //callback: function() {},
-                //loaded: false,
-                //name: null,
-                //id: null,
-                //elements_id: null
-                //
-            ],
-            created: false,
-            current: tab_default,
-        }
-    };
-
-    tabs.forEach(function(tab){
-        state.tabs.tab.push({
-            callback: function() {},
-            loaded: false,
-            name: tab,
-            id: tab.replace(' ', '_'),
-            elements_id: [],
-        });
-    });
-
-    return state;
-}
-
-var screen = {
-    start_proj: {
-        id: "start_proj",
-        state: null
-    },
-    timeline: {
-        id: "timeline",
-        state: new_state(
-            ["Channel Rack", "Sound Panel"],
-            "Channel Rack"
-        )
-    },
-    effects: {
-        id: "effects",
-        state: null
-    },
-    filters: {
-        id: "filters",
-        state: null
-    }
-};
-
-function set_tabs_callbacks(tabs, callbacks) {
-    callbacks.forEach(function(callback, idx) {
-        tabs.tab[idx].callback = callback;
-    });
-}
-
-set_tabs_callbacks(
-    screen.timeline.state.tabs,
-    [
-        function(){channel_rack_tab()},
-        function(){sound_panel_tab(screen.timeline)},
-    ]
-);
-
 onEvent("github", "click", function() {
     open("https://github.com/Player01osu/ableton_desu");
 });
@@ -118,6 +52,61 @@ function a_button(
     setProperty(id, "border-width", 1 | 0);
     setProperty(id, "border-color", rgb(77, 87, 95));
     setProperty(id, "border-radius", 4 | 0);
+}
+
+function messagePosition(message, position) {
+    setPosition(message.text.id, position.x, position.y, position.w, position.h);
+    setPosition(message.background.id, position.x, position.y, position.w, position.h);
+}
+
+function messageProperty(message, property, value) {
+    setProperty(message.text.id, property, value);
+    setProperty(message.background.id, property, value);
+}
+
+/// Position object must contain an x and y
+/// Size object {w: int, h: int}
+function new_message(id, content, position, size) {
+    if (!isFinite(position.x) || !isFinite(position.y)) {
+        console.log("Invalid position argument");
+        return null;
+    }
+
+    var message = {
+        text: {
+            id: id + "_message_content",
+            content: content
+        },
+        background: {
+            id: id + "_message_background",
+        },
+        position: position,
+        size: size
+    };
+
+    var background = message.background;
+    image(background.id, "icon://fa-stop");
+    setProperty(background.id, "fit", "none");
+    setProperty(background.id, "icon-color", rgb(218 , 92, 201, 0.9));
+    setProperty(background.id, "border-width", 2 | 0);
+    setProperty(background.id, "border-color", rgb(159, 159, 159, 0.9));
+
+    var text = message.text;
+    textLabel(text.id, text.content);
+    setProperty(text.id, "text-align", "center");
+    setProperty(text.id, "font-size", 11 | 0);
+
+    messagePosition(
+        message,
+        {
+            x: message.position.x,
+            y: message.position.y,
+            w: message.size.w,
+            h: message.size.h
+        }
+    );
+
+    return message;
 }
 
 var ux_buttons_drawn = false;
@@ -178,7 +167,7 @@ function screen_to_onclick(id, screen_name) {
         screen_sel = screen_name.id;
         setScreen(screen_name.id);
         redraw_ux_buttons();
-        load_state(screen_name.state);
+        load_tab_state(screen_name.state);
     });
 }
 
@@ -234,25 +223,12 @@ onEvent("start", "click", function() {
     switch_screen(screen.timeline);
 });
 
-function load_state(state) {
-    if (state == null) {
-        return;
-    }
-
-    if (state.tabs.created) {
-        tabs_select(state.tabs, state.tabs.current);
-    } else {
-        tabs_create(state.tabs);
-        state.tabs.created = true;
-    }
-}
-
 function switch_screen(screen_name) {
     setScreen(screen_name.id);
     screen_sel = screen_name.id;
 
     redraw_ux_buttons(screen_name);
-    load_state(screen_name.state);
+    load_tab_state(screen_name.state);
 }
 
 onEvent("bpm_slider", "input", function() {

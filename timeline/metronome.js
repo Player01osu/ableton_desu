@@ -4,11 +4,7 @@ var metronome = {
 };
 
 onEvent("metronome_button", "click", function() {
-    if (!metronome.toggle) {
-        setProperty("metronome_button", "border-width", 5 | 0);
-    } else {
-        setProperty("metronome_button", "border-width", 0 | 0);
-    }
+    setProperty("metronome_button", "border-color", rgb(0, 0, 0, !metronome.toggle | 0));
     metronome.toggle = !metronome.toggle;
 });
 

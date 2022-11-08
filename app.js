@@ -344,7 +344,6 @@ function alert_border(id) {
     var alert_border_id = "alert_border_" + id;
     var y = ALERT_BORDER_Y_OFFSET + (ALERT_BORDER_HEIGHT * queue_length(alert_queue));
 
-    // TODO When queue pops, move other notifs up.
     image(alert_border_id, "icon://fa-stop");
     setPosition(alert_border_id, 180, y, ALERT_BORDER_WIDTH, ALERT_BORDER_HEIGHT);
     setProperty(alert_border_id, "fit", "none");
@@ -402,12 +401,24 @@ function alert(head, sub) {
 
     setTimeout(function() {
         var alert_pop = queue_dequeue(alert_queue);
+
         var le_head_id = alert_pop.head_id;
         var le_border_id = alert_pop.border_id;
         var le_sub_id = alert_pop.sub_id;
+
         deleteElement(le_head_id);
         deleteElement(le_border_id);
         deleteElement(le_sub_id);
+
+        queue_for_each(alert_queue, function(alert) {
+            var head_cur = getProperty(alert.head_id, "y");
+            var sub_cur = getProperty(alert.sub_id, "y");
+            var border_cur = getProperty(alert.border_id, "y");
+
+            setProperty(alert.head_id, "y", head_cur - ALERT_BORDER_HEIGHT);
+            setProperty(alert.sub_id, "y", sub_cur - ALERT_BORDER_HEIGHT);
+            setProperty(alert.border_id, "y", border_cur - ALERT_BORDER_HEIGHT);
+        });
     }, 3000 | 0);
     ++alert_n;
 }
@@ -672,6 +683,12 @@ function queue_length(queue) {
 
 function queue_is_empty(queue) {
     return queue_length(queue) === 0;
+}
+
+function queue_for_each(queue, callback) {
+    for (var i = queue.head; i < queue.tail; ++i) {
+        callback(queue.elements[i]);
+    }
 }
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

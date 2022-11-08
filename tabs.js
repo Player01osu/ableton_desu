@@ -10,6 +10,10 @@ function tabs_create(tabs) {
     var TAB_BUTTON_WIDTH = (300 / len) | 0;
 
     tabs.tab.forEach(function(tab, idx) {
+        // FIXME Tabs idx for faster lookup.
+        // Reason: Tabs are statically created, and
+        // therefore their idx can be statically
+        // declared.
         if (tabs.current === tab.name) {
             tab.callback();
         }
@@ -32,6 +36,10 @@ function tabs_create(tabs) {
 }
 
 function tabs_select(tabs, tab_name) {
+    // FIXME Tabs idx for faster lookup.
+    // Reason: Tabs are statically created, and
+    // therefore their idx can be statically
+    // declared.
     tabs.tab.forEach(function(tab) {
         if (tabs.current === tab.name) {
             tabs_clear(tab);
@@ -58,6 +66,9 @@ function tabs_clear(tab) {
     }
 }
 
+// Tabs hold references to elements within said
+// tab. References are explicit, and must be added
+// through the tabs_insert_element() function.
 function tabs_show(tab) {
     if (tab != null) {
         tab.elements_id.forEach(function(id) {
@@ -66,6 +77,9 @@ function tabs_show(tab) {
     }
 }
 
+// Add reference to tab. This allows tabs to manage
+// state of elements inside of themselves, such as
+// showing and hiding elements.
 function tabs_insert_element(tab, element_id) {
     tab.elements_id.push(element_id);
 }

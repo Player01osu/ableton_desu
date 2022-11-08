@@ -1,3 +1,4 @@
+
 function new_state(tabs, tab_default) {
     var state = {
         tabs: {
@@ -15,6 +16,10 @@ function new_state(tabs, tab_default) {
         }
     };
 
+    // FIXME Tabs idx for faster lookup.
+    // Reason: Tabs are statically created, and
+    // therefore their idx can be statically
+    // declared.
     tabs.forEach(function(tab){
         state.tabs.tab.push({
             callback: function() {},
@@ -28,13 +33,18 @@ function new_state(tabs, tab_default) {
     return state;
 }
 
+var TIMELINE_CHANNEL_RACK_TAB_IDX = 0 | 0;
+var TIMELINE_SOUND_PANEL_TAB_IDX = 1 | 0;
+
 var screen = {
     start_proj: {
         id: "start_proj",
+        idx: 0,
         state: null
     },
     timeline: {
         id: "timeline",
+        idx: 1,
         state: new_state(
             ["Channel Rack", "Sound Panel"],
             "Channel Rack"
@@ -42,10 +52,12 @@ var screen = {
     },
     effects: {
         id: "effects",
+        idx: 2,
         state: null
     },
     filters: {
         id: "filters",
+        idx: 3,
         state: null
     }
 };

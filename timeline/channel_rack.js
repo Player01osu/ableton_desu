@@ -101,60 +101,62 @@ function channel_rack_tab() {
     var tab = screen.timeline.state.tabs.tab[TIMELINE_CHANNEL_RACK_TAB_IDX];
     if (tab.loaded) {
         tabs_show(tab);
-    } else {
-        channel_rack_icons(
-            tab,
-            "snare_icon",
-            "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
-            0 | 0
-        );
-
-        channel_rack_icons(
-            tab,
-            "kick_icon",
-            "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
-            1 | 0
-        );
-
-        channel_rack_icons(
-            tab,
-            "hihat",
-            "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
-            2 | 0
-        );
-
-        var reset_element_id = "channel_rack_reset_b";
-        a_button(
-            reset_element_id,
-            "Reset",
-            236,
-            245,
-            75,
-            23,
-            BUTTON_TEXT_COLOR,
-            BUTTON_BG[0],
-            10 | 0
-        );
-
-        onEvent(reset_element_id, "click", function() {channel_rack_reset(tab)});
-
-        tabs_insert_element(tab, reset_element_id);
-
-        var i = 0;
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.snare);
-        }
-
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.kick);
-        }
-
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.hihat);
-        }
-
-        tab.loaded = true;
+        return true;
     }
+
+    channel_rack_icons(
+        tab,
+        "snare_icon",
+        "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
+        0 | 0
+    );
+
+    channel_rack_icons(
+        tab,
+        "kick_icon",
+        "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
+        1 | 0
+    );
+
+    channel_rack_icons(
+        tab,
+        "hihat",
+        "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
+        2 | 0
+    );
+
+    var reset_element_id = "channel_rack_reset_b";
+    a_button(
+        reset_element_id,
+        "Reset",
+        236,
+        245,
+        75,
+        23,
+        BUTTON_TEXT_COLOR,
+        BUTTON_BG[0],
+        10 | 0
+    );
+
+    onEvent(reset_element_id, "click", function() {channel_rack_reset(tab)});
+
+    tabs_insert_element(tab, reset_element_id);
+
+    var i = 0;
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.snare);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.kick);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.hihat);
+    }
+
+    tab.loaded = true;
+    return false;
 }
 
 function channel_rack_element_id(sample, idx) {

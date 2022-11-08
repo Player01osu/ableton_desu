@@ -241,6 +241,7 @@ limit_input("bpm");
 limit_input("name");
 
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4
+
 function new_state(tabs, tab_default) {
     var state = {
         tabs: {
@@ -258,6 +259,10 @@ function new_state(tabs, tab_default) {
         }
     };
 
+    // FIXME Tabs idx for faster lookup.
+    // Reason: Tabs are statically created, and
+    // therefore their idx can be statically
+    // declared.
     tabs.forEach(function(tab){
         state.tabs.tab.push({
             callback: function() {},
@@ -271,13 +276,18 @@ function new_state(tabs, tab_default) {
     return state;
 }
 
+var TIMELINE_CHANNEL_RACK_TAB_IDX = 0 | 0;
+var TIMELINE_SOUND_PANEL_TAB_IDX = 1 | 0;
+
 var screen = {
     start_proj: {
         id: "start_proj",
+        idx: 0,
         state: null
     },
     timeline: {
         id: "timeline",
+        idx: 1,
         state: new_state(
             ["Channel Rack", "Sound Panel"],
             "Channel Rack"
@@ -285,10 +295,12 @@ var screen = {
     },
     effects: {
         id: "effects",
+        idx: 2,
         state: null
     },
     filters: {
         id: "filters",
+        idx: 3,
         state: null
     }
 };
@@ -413,6 +425,10 @@ function tabs_create(tabs) {
     var TAB_BUTTON_WIDTH = (300 / len) | 0;
 
     tabs.tab.forEach(function(tab, idx) {
+        // FIXME Tabs idx for faster lookup.
+        // Reason: Tabs are statically created, and
+        // therefore their idx can be statically
+        // declared.
         if (tabs.current === tab.name) {
             tab.callback();
         }
@@ -435,6 +451,10 @@ function tabs_create(tabs) {
 }
 
 function tabs_select(tabs, tab_name) {
+    // FIXME Tabs idx for faster lookup.
+    // Reason: Tabs are statically created, and
+    // therefore their idx can be statically
+    // declared.
     tabs.tab.forEach(function(tab) {
         if (tabs.current === tab.name) {
             tabs_clear(tab);
@@ -461,6 +481,9 @@ function tabs_clear(tab) {
     }
 }
 
+// Tabs hold references to elements within said
+// tab. References are explicit, and must be added
+// through the tabs_insert_element() function.
 function tabs_show(tab) {
     if (tab != null) {
         tab.elements_id.forEach(function(id) {
@@ -469,6 +492,9 @@ function tabs_show(tab) {
     }
 }
 
+// Add reference to tab. This allows tabs to manage
+// state of elements inside of themselves, such as
+// showing and hiding elements.
 function tabs_insert_element(tab, element_id) {
     tab.elements_id.push(element_id);
 }
@@ -657,28 +683,62 @@ var CHANNEL_RACK_BUTTON_ICON_GAP = 38 | 0;
 var CHANNEL_RACK_BUTTON_ICON_SIZE = 35 | 0;
 var CHANNEL_RACK_BUTTON_Y = 280 | 0;
 
+function beat_toggle(sample, idx) {
+    var is_checked = sample.beats[idx];
+    var element_id = channel_rack_element_id(sample, idx);
+
+    if (is_checked) {
+        setImageURL(element_id, "icon://fa-circle-thin");
+        sample.beats[idx] = false;
+    } else {
+        setImageURL(element_id, "icon://fa-circle");
+        sample.beats[idx] = true;
+    }
+}
+
+
 function fill_n_false(n) {
     var array = [];
+    var i = 0;
     for (i = 0 | 0; i < (n | 0); ++i) {
-        array.push(false);
+        array[i] = false;
     }
-    return array
+    return array;
 }
 
 var channel_rack = {
     snare: {
         beats: fill_n_false(16 | 0),
-        name: "snare"
+        name: "snare",
+        idx: 0
     },
     kick: {
         beats: fill_n_false(16 | 0),
-        name: "kick"
+        name: "kick",
+        idx: 1
     },
     hihat: {
         beats: fill_n_false(16 | 0),
-        name: "hihat"
+        name: "hihat",
+        idx: 2
     }
 };
+
+function channel_rack_reset(tab) {
+    // FIXME Overwrite with empty because this is slow.
+    for (var idx = 0; idx < 16; ++idx) {
+        if (channel_rack.snare.beats[idx]) {
+            beat_toggle(channel_rack.snare, idx);
+        }
+        if (channel_rack.kick.beats[idx]) {
+            beat_toggle(channel_rack.kick, idx);
+        }
+        if (channel_rack.hihat.beats[idx]) {
+            beat_toggle(channel_rack.hihat, idx);
+        }
+    }
+}
+
 
 function channel_rack_is_beat(idx) {
     return channel_rack.snare.beats[idx] ||
@@ -715,75 +775,78 @@ function channel_rack_icons(tab, element_id, url, n) {
 }
 
 function channel_rack_tab() {
-    var tab_idx = 0;
-    for (; tab_idx < screen.timeline.state.tabs.tab.length; ++tab_idx) {
-        if (screen.timeline.state.tabs.tab[tab_idx].name === "Channel Rack") {
-            break;
-        }
-    }
-
-    var tab = screen.timeline.state.tabs.tab[tab_idx];
+    var tab = screen.timeline.state.tabs.tab[TIMELINE_CHANNEL_RACK_TAB_IDX];
     if (tab.loaded) {
         tabs_show(tab);
-    } else {
-        channel_rack_icons(
-            tab,
-            "snare_icon",
-            "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
-            0 | 0
-        );
-
-        channel_rack_icons(
-            tab,
-            "kick_icon",
-            "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
-            1 | 0
-        );
-
-        channel_rack_icons(
-            tab,
-            "hihat",
-            "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
-            2 | 0
-        );
-
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.snare);
-        }
-
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.kick);
-        }
-
-        for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
-            channel_rack_buttons(tab, i, channel_rack.hihat);
-        }
-
-        tab.loaded = true;
+        return true;
     }
+
+    channel_rack_icons(
+        tab,
+        "snare_icon",
+        "https://cdn1.iconfinder.com/data/icons/music-outline-8/32/icon_music_24_icon_-07-1024.png",
+        0 | 0
+    );
+
+    channel_rack_icons(
+        tab,
+        "kick_icon",
+        "https://cdn3.iconfinder.com/data/icons/drummer-set/100/kickdrumm-1024.png",
+        1 | 0
+    );
+
+    channel_rack_icons(
+        tab,
+        "hihat",
+        "https://cdn4.iconfinder.com/data/icons/music-208/32/Music_band_drums_cymbals_hihat_play_rhythm-1024.png",
+        2 | 0
+    );
+
+    var reset_element_id = "channel_rack_reset_b";
+    a_button(
+        reset_element_id,
+        "Reset",
+        236,
+        245,
+        75,
+        23,
+        BUTTON_TEXT_COLOR,
+        BUTTON_BG[0],
+        10 | 0
+    );
+
+    onEvent(reset_element_id, "click", function() {channel_rack_reset(tab)});
+
+    tabs_insert_element(tab, reset_element_id);
+
+    var i = 0;
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.snare);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.kick);
+    }
+
+    for (i = 0 | 0; i < ((4 | 0) * (4 | 0) | 0); ++i) {
+        channel_rack_buttons(tab, i, channel_rack.hihat);
+    }
+
+    tab.loaded = true;
+    return false;
+}
+
+function channel_rack_element_id(sample, idx) {
+    return sample.name + idx;
 }
 
 function channel_rack_buttons(tab, idx, sample) {
-    var element_id = sample.name + idx;
-    if (sample.beats[idx]) {
-        image(element_id, "icon://fa-circle");
-    } else {
-        image(element_id, "icon://fa-circle-thin");
-    }
+    var element_id = channel_rack_element_id(sample, idx);
+    image(element_id, "icon://fa-circle-thin");
 
-    var y = CHANNEL_RACK_BUTTON_Y;
-
-    if (sample.name === "snare") {
-        y += CHANNEL_RACK_BUTTON_GAP * 0 | 0;
-    }
-
-    if (sample.name === "kick") {
-        y += (CHANNEL_RACK_BUTTON_GAP + CHANNEL_RACK_BUTTON_Y_GAP) * (1 | 0) | 0;
-    }
-
-    if (sample.name === "hihat") {
-        y += (CHANNEL_RACK_BUTTON_GAP + CHANNEL_RACK_BUTTON_Y_GAP) * (2 | 0) | 0;
-    }
+    var y = CHANNEL_RACK_BUTTON_Y +
+        ((CHANNEL_RACK_BUTTON_GAP + CHANNEL_RACK_BUTTON_Y_GAP) *
+        (sample.idx | 0)) | 0;
 
     setPosition(
         element_id,
@@ -794,13 +857,7 @@ function channel_rack_buttons(tab, idx, sample) {
     );
 
     onEvent(element_id, "click", function() {
-        var is_checked = sample.beats[idx];
-        if (is_checked) {
-            setImageURL(element_id, "icon://fa-circle-thin");
-        } else {
-            setImageURL(element_id, "icon://fa-circle");
-        }
-        sample.beats[idx] = !is_checked;
+        beat_toggle(sample, idx);
     });
 
     tabs_insert_element(tab, element_id);
@@ -830,19 +887,15 @@ var audio = {
 };
 
 function sound_panel_tab(screen_name) {
-    var tab_idx = 0 | 0;
-    for (; tab_idx < screen.timeline.state.tabs.tab.length; ++tab_idx) {
-        if (screen.timeline.state.tabs.tab[tab_idx].name === "Sound Panel") {
-            break;
-        }
-    }
-
-    var tab = screen.timeline.state.tabs.tab[tab_idx];
+    var tab = screen.timeline.state.tabs.tab[TIMELINE_SOUND_PANEL_TAB_IDX];
 
     if (tab.loaded) {
         tabs_show(tab);
-    } else {
-        if (screen_name.id === "timeline") {
+        return true;
+    }
+
+    switch (screen_name.idx) {
+        case 1:
             setProperty("audio_master_timeline_label", "hidden", false);
             setProperty("audio_master_timeline_slider", "hidden", false);
 
@@ -873,7 +926,10 @@ function sound_panel_tab(screen_name) {
             setProperty("audio_hihat_slider", "value", audio.hihat);
 
             tab.loaded = true;
-        }
+            break;
+        default:
+            console.log("UNREACHABLE: function sound_panel_tab(screen_name)");
     }
+    return false;
 }
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

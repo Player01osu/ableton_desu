@@ -6,19 +6,15 @@ var audio = {
 };
 
 function sound_panel_tab(screen_name) {
-    var tab_idx = 0 | 0;
-    for (; tab_idx < screen.timeline.state.tabs.tab.length; ++tab_idx) {
-        if (screen.timeline.state.tabs.tab[tab_idx].name === "Sound Panel") {
-            break;
-        }
-    }
-
-    var tab = screen.timeline.state.tabs.tab[tab_idx];
+    var tab = screen.timeline.state.tabs.tab[TIMELINE_SOUND_PANEL_TAB_IDX];
 
     if (tab.loaded) {
         tabs_show(tab);
-    } else {
-        if (screen_name.id === "timeline") {
+        return true;
+    }
+
+    switch (screen_name.idx) {
+        case 1:
             setProperty("audio_master_timeline_label", "hidden", false);
             setProperty("audio_master_timeline_slider", "hidden", false);
 
@@ -49,7 +45,10 @@ function sound_panel_tab(screen_name) {
             setProperty("audio_hihat_slider", "value", audio.hihat);
 
             tab.loaded = true;
-        }
+            break;
+        default:
+            console.log("UNREACHABLE: function sound_panel_tab(screen_name)");
     }
+    return false;
 }
 // vim:expandtab:softtabstop=4:tabstop=4:shiftwidth=4

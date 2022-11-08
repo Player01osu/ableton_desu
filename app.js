@@ -887,7 +887,7 @@ var audio = {
 };
 
 function sound_panel_tab(screen_name) {
-    var tab = screen.timeline.state.tabs.tab[TIMELINE_SOUND_PANEL_TAB_IDX];
+    var tab = screen_name.state.tabs.tab[TIMELINE_SOUND_PANEL_TAB_IDX];
 
     if (tab.loaded) {
         tabs_show(tab);

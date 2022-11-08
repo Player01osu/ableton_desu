@@ -5,15 +5,19 @@ var playback = {
     beat_sub: 0 | 0
 };
 
+var activation_warning = false;
+
 function playback_start() {
     var t = (((60 | 0) * (1000 | 0)) / (bpm * (4 | 0))) | 0;
     playback.beat_divisor = 0 | 0;
     playback.beat = 0 | 0;
     playback.beat_sub = 0 | 0;
 
-    if (!metronome.toggle && channel_rack_is_empty()) {
+    if (!metronome.toggle && channel_rack_is_empty() && !activation_warning) {
         alert("Warning!", "Nothing is activated");
+        activation_warning = true;
     }
+
     return timedLoop(t, function() {
         if (metronome.toggle && playback.beat_divisor == 0) {
             playSound("soft-hitnormal.mp3", false);
@@ -57,6 +61,7 @@ onEvent("play_button", "click", function() {
     } else {
         setImageURL("play_button", "icon://fa-play");
         stopTimedLoop(playback_handler);
+        activation_warning = false;
     }
     playback.toggle = !playback.toggle;
 });

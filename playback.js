@@ -23,17 +23,7 @@ function playback_start() {
             playSound("soft-hitnormal.mp3", false);
         }
 
-        if (channel_rack.snare.beats[playback.beat_sub]) {
-            playSound("normal-hitclap2.mp3", false);
-        }
-
-        if (channel_rack.kick.beats[playback.beat_sub]) {
-            playSound("drum-hitwhistle.mp3", false);
-        }
-
-        if (channel_rack.hihat.beats[playback.beat_sub]) {
-            playSound("drum-hitnormalh.mp3", false);
-        }
+        channel_rack_play_beat_sub(playback.beat_sub);
 
         if (playback.beat_divisor === 0) {
             playback.beat = ((playback.beat + 1) % 4) | 0;

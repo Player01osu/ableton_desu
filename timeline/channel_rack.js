@@ -6,7 +6,7 @@ var CHANNEL_RACK_BUTTON_ICON_GAP = 38 | 0;
 var CHANNEL_RACK_BUTTON_ICON_SIZE = 35 | 0;
 var CHANNEL_RACK_BUTTON_Y = 280 | 0;
 
-function beat_toggle(sample, idx) {
+function channel_rack_beat_toggle(sample, idx) {
     var is_checked = sample.beats[idx];
     var element_id = channel_rack_element_id(sample, idx);
 
@@ -29,35 +29,64 @@ function fill_n_false(n) {
     return array;
 }
 
+function fill_n_string(n) {
+    var array = [];
+    var i = 0;
+    for (i = 0 | 0; i < (n | 0); ++i) {
+        array[i] = "";
+    }
+    return array;
+}
+
 var channel_rack = {
     snare: {
         beats: fill_n_false(16 | 0),
+        samples: ["", "normal-hitclap2.mp3", "LR2_DSnare.mp3", "normal-hitclap99.mp3"],
+        sample_idx: 1,
         name: "snare",
         idx: 0
     },
     kick: {
         beats: fill_n_false(16 | 0),
+        samples: ["", "drum-hitwhistle.mp3", "LR2_KickBassD2.mp3", "LR2_Kick-Total-beat.mp3"],
+        sample_idx: 1,
         name: "kick",
         idx: 1
     },
     hihat: {
         beats: fill_n_false(16 | 0),
+        samples: ["", "drum-hitnormalh.mp3"],
+        sample_idx: 1,
         name: "hihat",
         idx: 2
     }
 };
 
+function channel_rack_play_beat_sub(beat) {
+    if (channel_rack.snare.beats[beat]) {
+        playSound(channel_rack.snare.samples[channel_rack.snare.sample_idx]);
+    }
+
+    if (channel_rack.kick.beats[beat]) {
+        playSound(channel_rack.kick.samples[channel_rack.kick.sample_idx]);
+    }
+
+    if (channel_rack.hihat.beats[beat]) {
+        playSound(channel_rack.hihat.samples[channel_rack.hihat.sample_idx]);
+    }
+}
+
 function channel_rack_reset(tab) {
     // FIXME Overwrite with empty because this is slow.
     for (var idx = 0; idx < 16; ++idx) {
         if (channel_rack.snare.beats[idx]) {
-            beat_toggle(channel_rack.snare, idx);
+            channel_rack_beat_toggle(channel_rack.snare, idx);
         }
         if (channel_rack.kick.beats[idx]) {
-            beat_toggle(channel_rack.kick, idx);
+            channel_rack_beat_toggle(channel_rack.kick, idx);
         }
         if (channel_rack.hihat.beats[idx]) {
-            beat_toggle(channel_rack.hihat, idx);
+            channel_rack_beat_toggle(channel_rack.hihat, idx);
         }
     }
 }
@@ -93,6 +122,33 @@ function channel_rack_icons(tab, element_id, url, n) {
         CHANNEL_RACK_BUTTON_ICON_SIZE,
         CHANNEL_RACK_BUTTON_ICON_SIZE
     );
+
+    onEvent(element_id, "click", function(e) {
+        var inc = 1;
+        if (e.ctrlKey) {
+            inc = -1;
+        }
+
+        switch (n) {
+            case 0:
+                channel_rack.snare.sample_idx =
+                    (channel_rack.snare.sample_idx + inc)
+                    % channel_rack.snare.samples.length;
+                break;
+            case 1:
+                channel_rack.kick.sample_idx =
+                    (channel_rack.kick.sample_idx + inc)
+                    % channel_rack.kick.samples.length;
+                break;
+            case 2:
+                channel_rack.hihat.sample_idx =
+                    (channel_rack.hihat.sample_idx + inc)
+                    % channel_rack.hihat.samples.length;
+                break;
+            default:
+                console.log("Unreachable: function channel_rack_icons(tab, element_id, url, n)");
+        }
+    });
 
     tabs_insert_element(tab, element_id);
 }
@@ -180,7 +236,7 @@ function channel_rack_buttons(tab, idx, sample) {
     );
 
     onEvent(element_id, "click", function() {
-        beat_toggle(sample, idx);
+        channel_rack_beat_toggle(sample, idx);
     });
 
     tabs_insert_element(tab, element_id);

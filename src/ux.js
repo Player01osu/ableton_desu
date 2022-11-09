@@ -1,23 +1,3 @@
-/*
- * Great question! Short answer: Game Lab & App Lab only support $ES5 features$ for
- * now. const and let, unfortunately, weren't added until ES6.
- *
- * Long answer: JavaScript does support other keywords for variable declaration as
- * you mentioned. We use const and let all the time in our own code base. These are
- * handy keywords that were added in ES6 (the 6th iteration of JavaScript) due to
- * high demand. The tough part is that each new version of the JavaScript spec
- * brings in lots of changes. Each browser has to update their interpreter to
- * handle all these changes (in fact, Internet Explorer still lacks support for
- * most ES6 features). Our own interpreter for Game Lab and App Lab, while a pretty
- * fancy piece of software, was designed to work with the previous version of the
- * JavaScript spec, ES5. It is a goal of ours to eventually be able to support all
- * the new language features that are part of ES6, but it will be a lot of work to
- * get there. So, in the meantime, we're stuck with only var.
- *
- * -Jessica, Code.org 3 Engineer
- * Feb 2020
- */
-
 var MAX_INPUT_LENGTH = 24 | 0;
 var BUTTON_TEXT_COLOR = rgb(255, 255, 255);
 var BUTTON_BG = [rgb(122, 0, 255), rgb(122, 0, 255, 0.50)];
